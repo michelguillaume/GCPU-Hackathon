@@ -5,7 +5,7 @@ metadata:
   labels:
     app: my-app
 spec:
-  replicas: 3 # Nombre de réplicas
+  replicas: 3
   selector:
     matchLabels:
       app: my-app
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: my-app-container
-          image: gcr.io/your-project-id/your-image:latest # Remplacez par votre image Docker
+          image: europe-west9-docker.pkg.dev/gcr-deployment-project/gcpu-hackathon-repo/my-app-image:latest
           ports:
             - containerPort: 8080
           env:
