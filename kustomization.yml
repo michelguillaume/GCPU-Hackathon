@@ -1,0 +1,7 @@
+resources:
+  - deployment.yml
+  - service.yml
+
+images:
+  - name: gcr.io/your-project-id/your-image
+    newTag: latest # Définit le tag pour l'image Docker
