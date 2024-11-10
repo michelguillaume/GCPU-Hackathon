@@ -47,6 +47,7 @@ env:
   REPOSITORY: ${{ secrets.REPOSITORY }}
   IMAGE: ${{ secrets.IMAGE }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+  FIRESTORE_KEY: ${{ secrets.FIRESTORE_KEY }}
 
 jobs:
   setup-build-publish-deploy:
@@ -85,6 +86,11 @@ jobs:
         uses: 'google-github-actions/get-gke-credentials@6051de21ad50fbb1767bc93c11357a49082ad116' # google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: projects/gcr-deployment-project/locations/europe-west9-c/clusters/my-cluster
+
+      # Créer le secret Firestore
+      - name: 'Create Firestore Secret'
+        run: |
+          kubectl create secret generic firestore-key --from-literal=key.json="${FIRESTORE_KEY}" --dry-run=client -o yaml | kubectl apply -f -
 
       # Build the Docker image
       - name: 'Build and push Docker container'
