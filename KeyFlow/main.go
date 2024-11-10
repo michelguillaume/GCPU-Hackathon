@@ -18,7 +18,7 @@ var client *firestore.Client
 var ctx = context.Background()
 
 func initFirestore() {
-	sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	sa := option.WithCredentialsFile("/secrets/key.json")
 	var err error
 	client, err = firestore.NewClient(ctx, "platinum-chain-441122-f5", sa)
 	if err != nil {

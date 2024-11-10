@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-deployment # Nom de votre déploiement
+  name: my-app-deployment
   labels:
     app: my-app
 spec:
@@ -22,3 +22,13 @@ spec:
           env:
             - name: PORT
               value: "8080"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/secrets/key.json"
+          volumeMounts:
+            - name: firestore-key-volume
+              mountPath: "/secrets"
+              readOnly: true
+      volumes:
+        - name: firestore-key-volume
+          secret:
+            secretName: firestore-key
