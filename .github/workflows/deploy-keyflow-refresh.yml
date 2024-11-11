@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'KeyFlow/keyflow-refresh/**'
+      - 'KeyFlow/keyFlow-refresh/**'
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
