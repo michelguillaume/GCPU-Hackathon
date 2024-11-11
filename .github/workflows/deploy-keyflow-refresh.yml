@@ -55,7 +55,7 @@ jobs:
         run: |
           kubectl create secret generic firestore-key --from-literal=key.json="${FIRESTORE_KEY}" --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: 'Build and push Docker container for KeyFlow-Refresh'
+      - name: 'Build and push Docker container for keyflow-refresh'
         run: |-
           DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
 
