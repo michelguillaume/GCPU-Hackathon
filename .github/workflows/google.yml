@@ -38,7 +38,7 @@ on:
     branches:
       - main
     paths:
-      - 'KeyFlow/**'
+      - 'KeyFlow/api/**'
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
