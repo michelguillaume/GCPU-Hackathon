@@ -31,14 +31,14 @@
 #
 # 5. Change the values in the "env" block to match your values.
 
-name: 'Build and Deploy to GKE'
+name: 'Build and Deploy KeyFlow API to GKE'
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'KeyFlow/**'
+      - 'KeyFlow/api/**'
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -47,7 +47,7 @@ env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }}
   REPOSITORY: ${{ secrets.REPOSITORY }}
-  IMAGE: ${{ secrets.IMAGE }}
+  IMAGE: ${{ secrets.IMAGE_KEYFLOW_API }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
   FIRESTORE_KEY: ${{ secrets.FIRESTORE_KEY }}
 
@@ -103,7 +103,7 @@ jobs:
             --tag "${DOCKER_TAG}" \
             --build-arg GITHUB_SHA="${GITHUB_SHA}" \
             --build-arg GITHUB_REF="${GITHUB_REF}" \
-            KeyFlow
+            KeyFlow/api
 
           docker push "${DOCKER_TAG}"
 
@@ -118,6 +118,7 @@ jobs:
       - name: 'Deploy to GKE'
         run: |-
           # replacing the image name in the k8s template
+          cd KeyFlow/api
           ./kustomize edit set image LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$DEPLOYMENT_NAME
