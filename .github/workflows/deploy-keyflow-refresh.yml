@@ -55,8 +55,10 @@ jobs:
         run: |-
           DOCKER_TAG_REFRESH="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
 
-          docker build \
-            --tag "${DOCKER_TAG_REFRESH}" \
+           docker build \
+            --tag "${DOCKER_TAG}" \
+            --build-arg GITHUB_SHA="${GITHUB_SHA}" \
+            --build-arg GITHUB_REF="${GITHUB_REF}" \
             KeyFlow/keyflow-refresh
 
           docker push "${DOCKER_TAG_REFRESH}"
@@ -72,4 +74,5 @@ jobs:
           # ./kustomize edit set image $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/keyflow-refresh:$GITHUB_SHA
           ./kustomize build KeyFlow/keyflow-refresh | kubectl apply -f -
           kubectl rollout status deployment/$DEPLOYMENT_NAME_REFRESH
+          kubectl get services -o wide
 
