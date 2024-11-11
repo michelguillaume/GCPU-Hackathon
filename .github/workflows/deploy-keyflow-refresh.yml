@@ -47,7 +47,7 @@ jobs:
 
       - name: 'Build and push Docker container for KeyFlow-Refresh'
         run: |-
-          DOCKER_TAG_REFRESH="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/keyflow-refresh:${GITHUB_SHA}"
+          DOCKER_TAG_REFRESH="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
 
           docker build \
             --tag "${DOCKER_TAG_REFRESH}" \
