@@ -47,7 +47,7 @@ env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }}
   REPOSITORY: ${{ secrets.REPOSITORY }}
-  IMAGE: ${{ secrets.IMAGE }}
+  IMAGE: ${{ secrets.IMAGE_KEYFLOW_API }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
   FIRESTORE_KEY: ${{ secrets.FIRESTORE_KEY }}
 
