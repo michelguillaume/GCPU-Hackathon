@@ -21,7 +21,7 @@ env:
 
 jobs:
   setup-build-publish-deploy-refresh:
-    name: 'Setup, Build, Publish, and Deploy KeyFlow-Refresh'
+    name: 'Setup, Build, Publish, and Deploy keyflow-refresh'
     runs-on: 'ubuntu-latest'
     environment: 'production'
 
@@ -51,9 +51,13 @@ jobs:
         with:
           cluster_name: projects/gcr-deployment-project/locations/europe-west9-c/clusters/my-cluster
 
+      - name: 'Create Firestore Secret'
+        run: |
+          kubectl create secret generic firestore-key --from-literal=key.json="${FIRESTORE_KEY}" --dry-run=client -o yaml | kubectl apply -f -
+
       - name: 'Build and push Docker container for KeyFlow-Refresh'
         run: |-
-          DOCKER_TAG_REFRESH="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
+          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
 
            docker build \
             --tag "${DOCKER_TAG}" \
@@ -61,7 +65,7 @@ jobs:
             --build-arg GITHUB_REF="${GITHUB_REF}" \
             KeyFlow/keyflow-refresh
 
-          docker push "${DOCKER_TAG_REFRESH}"
+          docker push "${DOCKER_TAG}"
 
       - name: 'Set up Kustomize'
         run: |-
@@ -73,6 +77,6 @@ jobs:
         run: |-
           # ./kustomize edit set image $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/keyflow-refresh:$GITHUB_SHA
           ./kustomize build KeyFlow/keyflow-refresh | kubectl apply -f -
-          kubectl rollout status deployment/$DEPLOYMENT_NAME_REFRESH
+          kubectl rollout status deployment/$DEPLOYMENT_NAME
           kubectl get services -o wide
 
