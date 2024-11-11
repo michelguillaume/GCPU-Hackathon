@@ -1,4 +1,4 @@
-name: 'Build and Deploy KeyFlow-Refresh to GKE'
+name: 'Build and Deploy KeyFlow-refresh to GKE'
 
 on:
   push:
