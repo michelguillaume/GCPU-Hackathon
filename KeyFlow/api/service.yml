@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: keyflow-api-deployment
+  name: keyflow-api-service
   labels:
     app: keyflow-api
 spec:
