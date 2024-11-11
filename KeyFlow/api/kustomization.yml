@@ -1,0 +1,8 @@
+resources:
+  - deployment.yml
+  - service.yml
+
+images:
+  - name: keyflow-api
+    newName: europe-west9-docker.pkg.dev/gcr-deployment-project/gcpu-hackathon-repo/keyflow-api
+    newTag: latest

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-deployment
+  name: keyflow-api-deployment
   labels:
-    app: my-app
+    app: keyflow-api
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-app
+      app: keyflow-api
   template:
     metadata:
       labels:
-        app: my-app
+        app: keyflow-api
     spec:
       containers:
-        - name: my-app-container
-          image: europe-west9-docker.pkg.dev/gcr-deployment-project/gcpu-hackathon-repo/my-app-image:latest
+        - name: keyflow-api-container
+          image: keyflow-api
           ports:
             - containerPort: 8080
           env:
