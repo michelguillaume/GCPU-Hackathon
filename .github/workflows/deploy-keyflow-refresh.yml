@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'KeyFlow/KeyFlow-refresh/**'
+  workflow_dispatch:
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
