@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'KeyFlow/KeyFlow-refresh/**'
+      - 'KeyFlow/keyflow-refresh/**'
   workflow_dispatch:
 
 env:
@@ -70,6 +70,6 @@ jobs:
       - name: 'Deploy KeyFlow-Refresh to GKE'
         run: |-
           # ./kustomize edit set image $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/keyflow-refresh:$GITHUB_SHA
-          ./kustomize build KeyFlow/keyFlow-refresh | kubectl apply -f -
+          ./kustomize build KeyFlow/keyflow-refresh | kubectl apply -f -
           kubectl rollout status deployment/$DEPLOYMENT_NAME_REFRESH
 
