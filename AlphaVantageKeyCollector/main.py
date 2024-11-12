@@ -91,7 +91,7 @@ def add_token_to_firestore(token, status="available"):
     print(f"Token {token} added to Firestore successfully.")
 
 def restart_tor():
-    subprocess.run(f"echo MeGaNe291219! | sudo -S pkill tor", shell=True)
+    subprocess.run(f"echo ************ | sudo -S pkill tor", shell=True)
     time.sleep(2)
 
     # Start Tor again
