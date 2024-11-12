@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/KeyFlow.iml" filepath="$PROJECT_DIR$/.idea/KeyFlow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../keyflow-refresh/.idea/KeyFlow-Refresh.iml" filepath="$PROJECT_DIR$/../keyflow-refresh/.idea/KeyFlow-Refresh.iml" />
     </modules>
   </component>
 </project>

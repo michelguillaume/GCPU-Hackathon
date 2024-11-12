@@ -77,7 +77,7 @@ const assetTypes = [
     { id: "mutual_funds", label: "Mutual Funds" },
 ];
 
-export default function Onboarding() {
+export default function OnboardingPage() {
     const [step, setStep] = useState(1);
 
     const form = useForm({
