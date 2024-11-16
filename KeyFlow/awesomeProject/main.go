@@ -1,87 +1,179 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
-	"sync"
+	"time"
+
+	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
-// Fonction pour récupérer la liste des clés à partir de votre API
-func fetchKeys(count int) ([]string, error) {
-	url := fmt.Sprintf("http://34.155.28.47/getKeys?count=%d", count)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de la requête : %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Erreur de réponse de l'API : %v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de la lecture de la réponse : %v", err)
-	}
-
-	var keys []string
-	if err := json.Unmarshal(body, &keys); err != nil {
-		return nil, fmt.Errorf("Erreur lors du décodage JSON : %v", err)
-	}
-
-	return keys, nil
+type Filing struct {
+	FilingID    string    `json:"filingId"`
+	Ticker      string    `json:"ticker"`
+	CompanyName string    `json:"companyName"`
+	FilingURL   string    `json:"filingUrl"`
+	StoredURL   string    `json:"storedUrl"`
+	AccessionNo string    `json:"accessionNo"`
+	FormType    string    `json:"formType"`
+	FiledAt     time.Time `json:"filedAt"`
+	LastUpdated time.Time `json:"lastUpdated"`
 }
 
-// Fonction pour appeler l'API Alpha Vantage avec une clé
-func fetchAlphaVantageData(apiKey string, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	url := fmt.Sprintf("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=5min&outputsize=full&extended_hours=false&month=2000-01&adjusted=true&datatype=json&apikey=%s", apiKey)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Printf("Erreur lors de la requête à Alpha Vantage avec la clé %s : %v", apiKey, err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("Erreur de réponse de l'API Alpha Vantage avec la clé %s : %v", apiKey, resp.Status)
-		return
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("Erreur lors de la lecture de la réponse avec la clé %s : %v", apiKey, err)
-		return
-	}
-
-	var result map[string]interface{}
-	if err := json.Unmarshal(body, &result); err != nil {
-		log.Printf("Erreur lors du décodage JSON avec la clé %s : %v", apiKey, err)
-		return
-	}
-
-	fmt.Printf("Données Alpha Vantage pour la clé %s : %v\n", apiKey, result)
-}
+var (
+	firestoreClient *firestore.Client
+	storageClient   *storage.Client
+	ctx             = context.Background()
+	bucketName      = "filing-pdf"
+	apiKey          = "9b33268df768f2747a8dbac25da79a1dfbc5523ae7a3805bb61d5aa12fd122ab"
+	projectID       = "platinum-chain-441122-f5"
+)
 
 func main() {
-	keys, err := fetchKeys(29000)
+	log.Println("Initializing Firestore and Google Cloud Storage...")
+	if err := initFirestore(); err != nil {
+		log.Fatalf("Failed to initialize Firestore: %v", err)
+	}
+	defer firestoreClient.Close()
+
+	if err := initStorage(); err != nil {
+		log.Fatalf("Failed to initialize Google Cloud Storage: %v", err)
+	}
+	defer storageClient.Close()
+
+	log.Println("Starting API server on port 8080")
+	http.HandleFunc("/api/view", handleFilingRequest)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+}
+
+func initFirestore() error {
+	sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	var err error
+	firestoreClient, err = firestore.NewClient(ctx, projectID, sa)
+	return err
+}
+
+func initStorage() error {
+	sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	var err error
+	storageClient, err = storage.NewClient(ctx, sa)
+	return err
+}
+
+func handleFilingRequest(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received request to handle filing.")
+
+	var filingData Filing
+	err := json.NewDecoder(r.Body).Decode(&filingData)
 	if err != nil {
-		log.Fatalf("Erreur lors de la récupération des clés : %v", err)
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
 	}
 
-	var wg sync.WaitGroup
-
-	// Pour chaque clé, lancer une goroutine pour appeler l'API Alpha Vantage
-	for _, key := range keys {
-		wg.Add(1)
-		go fetchAlphaVantageData(key, &wg)
+	if filingData.FilingID == "" || filingData.FilingURL == "" {
+		http.Error(w, "Missing reportId or filingUrl parameter", http.StatusBadRequest)
+		return
 	}
 
-	// Attendre la fin de toutes les goroutines
-	wg.Wait()
-	log.Println("Tous les appels à l'API Alpha Vantage ont été complétés.")
+	fileURL, err := processFiling(filingData)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to process filing: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("Filing processed successfully. Sending response.")
+	response := map[string]string{"fileURL": fileURL}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func processFiling(filingData Filing) (string, error) {
+	log.Printf("Processing filing for ID: %s\n", filingData.FilingID)
+	docRef := firestoreClient.Collection("financialReports").Doc(filingData.FilingID)
+	doc, err := docRef.Get(ctx)
+	if err == nil && doc.Exists() {
+		var existingFiling Filing
+		if err := doc.DataTo(&existingFiling); err != nil {
+			return "", fmt.Errorf("failed to decode Firestore document: %v", err)
+		}
+		exists, gcsErr := checkFileInGCS(filingData.FilingID)
+		if gcsErr != nil {
+			return "", fmt.Errorf("error checking file in GCS: %v", gcsErr)
+		}
+		if exists {
+			log.Println("File already exists in GCS.")
+			return existingFiling.StoredURL, nil
+		}
+	}
+
+	log.Println("Downloading file from SEC API...")
+	downloadURL := fmt.Sprintf("https://api.sec-api.io/filing-reader?token=%s&url=%s", apiKey, filingData.FilingURL)
+	fileData, err := downloadFile(downloadURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to download filing: %v", err)
+	}
+
+	log.Println("Storing file in GCS...")
+	storedURL, err := storeInGCS(filingData.FilingID, fileData)
+	if err != nil {
+		return "", fmt.Errorf("failed to store file in GCS: %v", err)
+	}
+
+	filingData.StoredURL = storedURL
+	filingData.LastUpdated = time.Now()
+	if _, err := docRef.Set(ctx, filingData); err != nil {
+		return "", fmt.Errorf("failed to save metadata to Firestore: %v", err)
+	}
+	log.Println("Filing data stored in Firestore successfully.")
+	return storedURL, nil
+}
+
+func checkFileInGCS(reportID string) (bool, error) {
+	objName := fmt.Sprintf("filings/%s.pdf", reportID)
+	_, err := storageClient.Bucket(bucketName).Object(objName).Attrs(ctx)
+
+	if err == storage.ErrObjectNotExist {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func downloadFile(url string) ([]byte, error) {
+	log.Printf("Downloading file from URL: %s\n", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return io.ReadAll(resp.Body)
+}
+
+func storeInGCS(reportID string, fileData []byte) (string, error) {
+	objName := fmt.Sprintf("filings/%s.pdf", reportID)
+	writer := storageClient.Bucket(bucketName).Object(objName).NewWriter(ctx)
+
+	if _, err := writer.Write(fileData); err != nil {
+		return "", err
+	}
+	if err := writer.Close(); err != nil {
+		return "", err
+	}
+
+	url := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, objName)
+	log.Printf("File stored successfully in GCS: %s\n", url)
+	return url, nil
 }

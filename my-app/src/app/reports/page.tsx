@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sheet"
 import { FileText, Search, Upload, Download, BarChart, Filter } from "lucide-react"
 import { fetchData, Filing } from "@/app/actions/fetchData"
+import { useRouter } from 'next/navigation';
 
 // Composant pour les filtres
 interface FilterSectionProps {
@@ -83,29 +84,61 @@ interface ReportCardProps {
     report: Filing;
 }
 
-const ReportCard: React.FC<ReportCardProps> = ({ report }) => (
-    <Card key={report.id} className="flex flex-col justify-between h-full">
-        <CardHeader>
-            <CardTitle>{report.companyName}</CardTitle>
-            <div className="text-sm text-gray-500">
-                {new Date(report.filedAt).toLocaleDateString()} | {report.ticker || "N/A"}
-            </div>
-        </CardHeader>
-        <CardContent className="overflow-hidden max-h-24">
-            <p className="text-gray-600">{report.description}</p>
-        </CardContent>
-        <CardFooter className="flex flex-wrap justify-end gap-2">
-            <Button variant="outline" className="flex-shrink-0" href={report.linkToTxt} target="_blank">
-                <Download className="mr-2 h-4 w-4" />
-                Télécharger
-            </Button>
-            <Button className="flex-shrink-0" href={report.linkToFilingDetails} target="_blank">
-                <BarChart className="mr-2 h-4 w-4" />
-                Voir
-            </Button>
-        </CardFooter>
-    </Card>
-);
+const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
+    const router = useRouter();
+
+    const handleViewClick = async () => {
+        try {
+            const response = await fetch('/api/view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reportId: report.id,
+                    filingUrl: report.linkToFilingDetails,
+                    accessionNo: report.accessionNo,
+                    companyName: report.companyName,
+                    filedAt: report.filedAt,
+                    formType: report.formType,
+                    ticker: report.ticker
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                // Utilisez router.push pour rediriger
+                router.push(`/chat/${report.id}`);
+            } else {
+                console.error("Failed to fetch the report", data);
+            }
+        } catch (error) {
+            console.error("Error calling API:", error);
+        }
+    };
+
+    return (
+        <Card key={report.id} className="flex flex-col justify-between h-full">
+            <CardHeader>
+                <CardTitle>{report.companyName}</CardTitle>
+                <div className="text-sm text-gray-500">
+                    {new Date(report.filedAt).toLocaleDateString()} | {report.ticker || "N/A"}
+                </div>
+            </CardHeader>
+            <CardContent className="overflow-hidden max-h-24">
+                <p className="text-gray-600">{report.description}</p>
+            </CardContent>
+            <CardFooter className="flex flex-wrap justify-end gap-2">
+                <Button variant="outline" className="flex-shrink-0" href={report.linkToTxt} target="_blank">
+                    <Download className="mr-2 h-4 w-4" />
+                    Télécharger
+                </Button>
+                <Button className="flex-shrink-0" onClick={handleViewClick}>
+                    <BarChart className="mr-2 h-4 w-4" />
+                    Voir
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const ReportsPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("")
