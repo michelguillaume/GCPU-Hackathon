@@ -38,7 +38,7 @@ on:
     branches:
       - main
     paths:
-      - 'KeyFlow/api/**'
+      - 'FilingManager/**'
   workflow_dispatch:
 
 env:
@@ -46,9 +46,9 @@ env:
   GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  DEPLOYMENT_NAME: ${{ secrets.KEYFLOW_API_DEPLOYMENT_NAME }}
+  DEPLOYMENT_NAME: ${{ secrets.FILING_MANAGER_DEPLOYMENT_NAME }}
   REPOSITORY: ${{ secrets.REPOSITORY }}
-  IMAGE: ${{ secrets.IMAGE_KEYFLOW_API }}
+  IMAGE: ${{ secrets.IMAGE_FILING_MANAGER }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
   FIRESTORE_KEY: ${{ secrets.FIRESTORE_KEY }}
 
