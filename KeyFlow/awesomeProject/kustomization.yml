@@ -5,3 +5,6 @@ images:
   - name: filing-manager
     newName: europe-west9-docker.pkg.dev/gcr-deployment-project/gcpu-hackathon-repo/filing-manager
     newTag: latest
+
+DEPLOYMENT_NAME: ${{ secrets.FILING_MANAGER_DEPLOYMENT_NAME }}
+  IMAGE: ${{ secrets.IMAGE_FILING_MANAGER }}
