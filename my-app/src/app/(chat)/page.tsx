@@ -13,7 +13,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import {FileText, Download, BarChart, Filter} from "lucide-react"
+import {FileText, Download, BarChart, Filter, Loader2} from "lucide-react"
 import { fetchData, Filing } from "@/app/actions/fetchData"
 import { useRouter } from 'next/navigation';
 import {Skeleton} from "@/components/ui/skeleton";
@@ -121,8 +121,10 @@ interface ReportCardProps {
 
 const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
     const router = useRouter();
+    const [loadingAction, setLoadingAction] = useState<"view" | "download" | null>(null);
 
     const handleViewClick = async () => {
+        setLoadingAction("view");
         try {
             const response = await fetch('/api/view', {
                 method: 'POST',
@@ -147,10 +149,13 @@ const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
             }
         } catch (error) {
             console.error("Error calling API:", error);
+        } finally {
+            setLoadingAction(null);
         }
     };
 
     const handleDownloadClick = async () => {
+        setLoadingAction("download");
         try {
             const response = await fetch('/api/view', {
                 method: 'POST',
@@ -180,6 +185,8 @@ const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
             }
         } catch (error) {
             console.error("Error calling API:", error);
+        } finally {
+            setLoadingAction(null);
         }
     };
 
@@ -195,13 +202,40 @@ const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
                 <p className="text-gray-600">{report.description}</p>
             </CardContent>
             <CardFooter className="flex flex-wrap justify-end gap-2">
-                <Button variant="outline" onClick={handleDownloadClick} className="flex-shrink-0">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
+                <Button
+                    variant="outline"
+                    onClick={handleDownloadClick}
+                    disabled={loadingAction === "download"}
+                    className="flex-shrink-0"
+                >
+                    {loadingAction === "download" ? (
+                        <>
+                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                            Please wait
+                        </>
+                    ) : (
+                        <>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download
+                        </>
+                    )}
                 </Button>
-                <Button className="flex-shrink-0" onClick={handleViewClick}>
-                    <BarChart className="mr-2 h-4 w-4" />
-                    View
+                <Button
+                    onClick={handleViewClick}
+                    disabled={loadingAction === "view"}
+                    className="flex-shrink-0"
+                >
+                    {loadingAction === "view" ? (
+                        <>
+                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                            Please wait
+                        </>
+                    ) : (
+                        <>
+                            <BarChart className="mr-2 h-4 w-4" />
+                            View
+                        </>
+                    )}
                 </Button>
             </CardFooter>
         </Card>
