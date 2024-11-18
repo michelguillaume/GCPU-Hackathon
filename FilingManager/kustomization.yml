@@ -1,5 +1,6 @@
 resources:
   - deployment.yml
+  - service.yml
 
 images:
   - name: filing-manager
