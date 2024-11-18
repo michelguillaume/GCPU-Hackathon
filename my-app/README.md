@@ -18,7 +18,8 @@ This project was created as part of the GCPU Hackathon to showcase how AI and cl
 
 2. **Data Storage with Google Cloud**
     - **Cloud Storage**: Stores the PDFs of financial reports.
-    - **BigQuery**: Stores metadata and detailed information about financial reports.
+    - **Firestore**: Stores metadata and detailed information about financial reports.
+    - **Neon (with Drizzle)**: A PostgreSQL-based solution to manage relational data for financial reports and user interactions.
 
 3. **API Backend**  
    A Go-based API deployed on **Google Cloud Kubernetes Engine**, responsible for handling:
@@ -38,9 +39,13 @@ This project was created as part of the GCPU Hackathon to showcase how AI and cl
 
 ### Backend
 - **Google Cloud Kubernetes Engine**: Scalable deployment for our Go-based API.
-  ![Google Cloud Kubernetes Engine Screenshot](./images/chatbot_1.png)
+  ![Google Cloud Kubernetes Engine Screenshot](./images/google_cloud_kubernetes_engine.png)
 - **Cloud Storage**: Secure and scalable storage for PDFs.
-- **BigQuery**: Handles structured storage and queries for financial data.
+  ![Cloud Storage Screenshot](./images/cloud_storage.png)
+- **Firestore**: Handles structured storage and queries for financial data.
+  ![Cloud Storage Screenshot](./images/firestore.png)
+- **Neon Database**: Manages relational data for reports, users, and interactions using Drizzle ORM.
+  ![Cloud Storage Screenshot](./images/neon_database.png)
 
 ### Frontend
 - **Next.js**: React framework for a dynamic and interactive user interface.
@@ -82,6 +87,7 @@ This project was created as part of the GCPU Hackathon to showcase how AI and cl
 
 The application is deployed on:
 - **Frontend**: [Vercel](https://gcpu-hackathon-pg5p7ark5-guillaume-michels-projects-b8350f77.vercel.app)
+  ![Chatbot Screenshot](./images/vercel.png)
 - **Backend**: Google Cloud Kubernetes Engine
 
 ---
@@ -91,14 +97,18 @@ The application is deployed on:
 ### Prerequisites
 1. **Google Cloud Setup**:
     - Cloud Storage bucket.
-    - BigQuery dataset.
+    - Firestore database.
     - API keys for SEC API and Gemini.
 
-2. **Node.js and Go**:
+2. **Neon and Drizzle Setup**:
+   - Create a Neon PostgreSQL database.
+   - Use Drizzle ORM for schema and queries.
+
+3. **Node.js and Go**:
     - Install [Node.js](https://nodejs.org/) for the frontend.
     - Install [Go](https://golang.org/) for the API backend.
 
-3. **Next.js**:
+4. **Next.js**:
     - Install dependencies: `npm install`
 
 ### Steps
