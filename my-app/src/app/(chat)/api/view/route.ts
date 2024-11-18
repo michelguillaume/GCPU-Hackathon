@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {getChatById, getChatByReportIdAndUserId, saveChat, saveMessages} from "@/db/queries";
+import {getChatByReportIdAndUserId, saveChat} from "@/db/queries";
 import {generateUUID} from "@/lib/utils";
 import getSession from "@/lib/getSession";
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/view`, {
+        const response = await fetch(`http://34.163.132.167/api/view`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

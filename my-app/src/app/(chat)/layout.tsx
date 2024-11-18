@@ -1,7 +1,5 @@
-import { cookies } from 'next/headers';
-
 import { AppSidebar } from '@/components/app-sidebar';
-import {SidebarInset, SidebarProvider, SidebarTrigger} from '@/components/ui/sidebar';
+import {SidebarInset, SidebarProvider} from '@/components/ui/sidebar';
 
 import getSession from "@/lib/getSession";
 import {redirect} from "next/navigation";

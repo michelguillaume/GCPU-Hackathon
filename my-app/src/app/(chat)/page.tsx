@@ -13,7 +13,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import {FileText, Search, Upload, Download, BarChart, Filter} from "lucide-react"
+import {FileText, Download, BarChart, Filter} from "lucide-react"
 import { fetchData, Filing } from "@/app/actions/fetchData"
 import { useRouter } from 'next/navigation';
 import {Skeleton} from "@/components/ui/skeleton";

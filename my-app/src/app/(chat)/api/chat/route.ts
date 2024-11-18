@@ -12,7 +12,6 @@ import getSession from "@/lib/getSession";
 import {
     deleteChatById,
     getChatById,
-    saveChat,
     saveMessages,
 } from '@/db/queries';
 import {
@@ -100,7 +99,7 @@ export async function POST(request: Request) {
                             }
                         ),
                     });
-                } catch (error) {
+                } catch (_) {
                     console.error('Failed to save chat');
                 }
             }
@@ -141,7 +140,7 @@ export async function DELETE(request: Request) {
         await deleteChatById({ id });
 
         return new Response('Chat deleted', { status: 200 });
-    } catch (error) {
+    } catch (_) {
         return new Response('An error occurred while processing your request', {
             status: 500,
         });
