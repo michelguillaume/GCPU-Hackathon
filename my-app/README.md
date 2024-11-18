@@ -46,6 +46,7 @@ This project was created as part of the GCPU Hackathon to showcase how AI and cl
   ![Cloud Storage Screenshot](./images/firestore.png)
 - **Neon Database**: Manages relational data for reports, users, and interactions using Drizzle ORM.
   ![Cloud Storage Screenshot](./images/neon_database.png)
+  ![Cloud Storage Screenshot](./images/drizzle.png)
 
 ### Frontend
 - **Next.js**: React framework for a dynamic and interactive user interface.
