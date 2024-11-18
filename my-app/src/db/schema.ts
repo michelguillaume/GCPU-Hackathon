@@ -94,6 +94,7 @@ export const authenticators = pgTable(
 
 export const chat = pgTable('Chat', {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
+    reportId: text('reportId').notNull(),
     createdAt: timestamp('createdAt').notNull(),
     title: text('title').notNull(),
     userId: text('userId')

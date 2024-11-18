@@ -119,7 +119,7 @@ export function convertToUIMessages(
             id: message.id,
             role: message.role as Message['role'],
             content: textContent,
-            toolInvocations,
+         //   toolInvocations,
         });
 
         return chatMessages;
@@ -221,4 +221,13 @@ export function getMessageIdFromAnnotations(message: Message) {
 
     // @ts-expect-error messageIdFromServer is not defined in MessageAnnotation
     return annotation.messageIdFromServer;
+}
+
+export function getInitials(name?: string | null) {
+    if (!name) return "NA";
+    const initials = name
+        .split(" ")
+        .map((word) => word[0])
+        .join("");
+    return initials.toUpperCase();
 }

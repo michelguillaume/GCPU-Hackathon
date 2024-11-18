@@ -21,8 +21,6 @@ import {
     sanitizeResponseMessages,
 } from '@/lib/utils';
 
-import { generateTitleFromUserMessage } from '../../actions';
-
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
@@ -46,22 +44,22 @@ export async function POST(request: Request) {
     }
 
     const coreMessages = convertToCoreMessages(messages);
+
     const userMessage = getMostRecentUserMessage(coreMessages);
 
     if (!userMessage) {
         return new Response('No user message found', { status: 400 });
     }
 
-    const chat = await getChatById({ id });
+    console.log(messages);
 
-    if (!chat) {
-        const title = await generateTitleFromUserMessage({ message: userMessage });
-        await saveChat({ id, userId: session.user.id, title });
-    }
+    console.log(coreMessages);
 
     await saveMessages({
         messages: [
-            { ...userMessage, id: generateUUID(), createdAt: new Date(), chatId: id },
+            {
+                ...userMessage, id: generateUUID(), createdAt: new Date(), chatId: id,
+            },
         ],
     });
 
@@ -75,8 +73,17 @@ export async function POST(request: Request) {
         onFinish: async ({ responseMessages }) => {
             if (session.user && session.user.id) {
                 try {
+                    /*
+                    await saveChat({
+                        id,
+                        messages: [...coreMessages, ...responseMessages],
+                        userId: session.user.id,
+                    });
+                    */
                     const responseMessagesWithoutIncompleteToolCalls =
                         sanitizeResponseMessages(responseMessages);
+
+                    console.log(responseMessagesWithoutIncompleteToolCalls);
 
                     await saveMessages({
                         messages: responseMessagesWithoutIncompleteToolCalls.map(
@@ -97,8 +104,7 @@ export async function POST(request: Request) {
                     console.error('Failed to save chat');
                 }
             }
-
-            streamingData.close();
+            await streamingData.close();
         },
         experimental_telemetry: {
             isEnabled: true,

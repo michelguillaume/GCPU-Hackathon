@@ -17,10 +17,12 @@ import { Overview } from './overview';
 
 export function Chat({
                          id,
+                         reportId,
                          initialMessages,
                          selectedModelId,
                      }: {
     id: string;
+    reportId: string;
     initialMessages: Array<Message>;
     selectedModelId: string;
 }) {
@@ -56,14 +58,15 @@ export function Chat({
     return (
         <>
             <div className="flex flex-col min-w-0 h-dvh bg-background">
-                <ChatHeader selectedModelId={selectedModelId} />
+                <ChatHeader selectedModelId={selectedModelId} reportId={reportId} />
                 <div
                     ref={messagesContainerRef}
                     className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
                 >
                     {messages.length === 0 && <Overview />}
 
-                    {messages.map((message, index) => (
+                    {messages
+                        .map((message, index) => (
                         <PreviewMessage
                             key={message.id}
                             chatId={id}
@@ -91,6 +94,7 @@ export function Chat({
                 <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
                     <MultimodalInput
                         chatId={id}
+                        reportId={reportId}
                         input={input}
                         setInput={setInput}
                         handleSubmit={handleSubmit}

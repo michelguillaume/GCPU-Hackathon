@@ -4,6 +4,8 @@ import "./globals.css";
 import React from "react";
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import {SessionProvider} from "next-auth/react";
+import {ThemeProvider} from "next-themes";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,17 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en">
+      <html
+          lang="en"
+          // `next-themes` injects an extra classname to the body element to avoid
+          // visual flicker before hydration. Hence the `suppressHydrationWarning`
+          // prop is necessary to avoid the React hydration mismatch warning.
+          // https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app
+          suppressHydrationWarning
+      >
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-         <SidebarProvider>
-             <AppSidebar/>
-             <SidebarInset>
-                 <header>
-                     <SidebarTrigger/>
-                 </header>
-                 {children}
-             </SidebarInset>
-         </SidebarProvider>
+        <SessionProvider>
+            {children}
+        </SessionProvider>
         </body>
       </html>
   );

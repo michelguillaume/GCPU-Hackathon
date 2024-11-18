@@ -55,7 +55,7 @@ export const PreviewMessage = ({
                         </div>
                     )}
 
-                    {message.experimental_attachments && (
+                    {/*message.experimental_attachments && (
                         <div className="flex flex-row gap-2">
                             {message.experimental_attachments.map((attachment) => (
                                 <PreviewAttachment
@@ -64,7 +64,7 @@ export const PreviewMessage = ({
                                 />
                             ))}
                         </div>
-                    )}
+                    )*/}
 
                     <MessageActions
                         key={`action-${message.id}`}

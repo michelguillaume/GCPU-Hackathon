@@ -35,6 +35,7 @@ const suggestedActions = [
 
 export function MultimodalInput({
                                     chatId,
+                                    reportId,
                                     input,
                                     setInput,
                                     isLoading,
@@ -48,6 +49,7 @@ export function MultimodalInput({
                                     className,
                                 }: {
     chatId: string;
+    reportId: string;
     input: string;
     setInput: (value: string) => void;
     isLoading: boolean;
@@ -117,7 +119,14 @@ export function MultimodalInput({
         window.history.replaceState({}, '', `/chat/${chatId}`);
 
         handleSubmit(undefined, {
-            experimental_attachments: attachments,
+            experimental_attachments: [
+                {
+                    name: 'Financial Report',
+                    contentType: 'application/pdf',
+                    url: `https://storage.googleapis.com/filing-pdf/filings/${reportId}.pdf`,
+                },
+                ...attachments
+            ],
         });
 
         setAttachments([]);
@@ -209,10 +218,20 @@ export function MultimodalInput({
                                     onClick={async () => {
                                         window.history.replaceState({}, '', `/chat/${chatId}`);
 
-                                        append({
-                                            role: 'user',
-                                            content: suggestedAction.action,
-                                        });
+                                        append(
+                                            {
+                                                role: 'user',
+                                                content: suggestedAction.action,
+                                            }, {
+                                                experimental_attachments: [
+                                                    {
+                                                        name: 'Financial Report',
+                                                        contentType: 'application/pdf',
+                                                        url: `https://storage.googleapis.com/filing-pdf/filings/${reportId}.pdf`,
+                                                    },
+                                                ],
+                                            }
+                                            );
                                     }}
                                     className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
                                 >

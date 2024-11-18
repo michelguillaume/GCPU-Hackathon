@@ -1,0 +1,1 @@
+ALTER TABLE "Chat" ADD COLUMN "reportId" text NOT NULL;

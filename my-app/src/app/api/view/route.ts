@@ -1,11 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
+import {getChatById, getChatByReportIdAndUserId, saveChat, saveMessages} from "@/db/queries";
+import {generateUUID} from "@/lib/utils";
+import getSession from "@/lib/getSession";
 
-interface ApiResponse {
-    fileURL?: string;
-    message?: string;
-}
 
 export async function POST(req: NextRequest) {
+    const session = await getSession();
+
+    if (!session || !session.user || !session.user.id) {
+        return new Response('Unauthorized', {status: 401});
+    }
+
     const requestData = await req.json();
     const { reportId, filingUrl, accessionNo, companyName, filedAt, formType, ticker } = requestData;
 
@@ -39,11 +44,42 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const data: ApiResponse = await response.json();
+        const goApiResponse = await response.json();
+        const fileURL = goApiResponse.fileURL;
+
+        if (!fileURL) {
+            return NextResponse.json(
+                { error: "The Go API did not return a file URL" },
+                { status: 500 }
+            );
+        }
+
+        const existingChat = await getChatByReportIdAndUserId({
+            reportId,
+            userId: session.user.id,
+        });
+
+        let chatId;
+
+        if (!existingChat) {
+            const chatTitle = `${companyName} - ${formType} - ${filedAt}`;
+            chatId = generateUUID();
+
+            await saveChat({
+                id: chatId,
+                reportId,
+                userId: session.user.id,
+                title: chatTitle,
+            });
+        } else {
+            chatId = existingChat.id;
+        }
+
         return NextResponse.json(
             {
-                fileURL: data.fileURL,
-                message: "Request processed successfully"
+                message: "Request processed successfully",
+                fileURL: fileURL,
+                chatId: chatId,
             },
             { status: 200 }
         );

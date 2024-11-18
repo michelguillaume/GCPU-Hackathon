@@ -16,20 +16,22 @@ export default async function Page({
     const session = await getSession();
 
     if (!session || !session.user) {
-        return <div>Not Found</div>;
+        notFound();
     }
 
     const { id } = await params;
 
-   // const chat = await getChatById({ id });
+    const chat = await getChatById({ id });
 
-   // if (!chat) {
-   //     notFound();
-   // }
+    if (!chat) {
+        notFound();
+    }
 
     const messagesFromDb = await getMessagesByChatId({
         id,
     });
+
+    console.log(messagesFromDb);
 
     const cookieStore = await cookies();
     const modelIdFromCookie = cookieStore.get('model-id')?.value;
@@ -40,6 +42,7 @@ export default async function Page({
     return (
         <PreviewChat
             id={id}
+            reportId={chat.reportId}
             initialMessages={convertToUIMessages(messagesFromDb)}
             selectedModelId={selectedModelId}
         />
