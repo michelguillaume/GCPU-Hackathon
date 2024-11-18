@@ -1,7 +1,0 @@
-resources:
-  - deployment.yml
-
-images:
-  - name: keyflow-refresh
-    newName: europe-west9-docker.pkg.dev/gcr-deployment-project/gcpu-hackathon-repo/keyflow-refresh
-    newTag: latest
