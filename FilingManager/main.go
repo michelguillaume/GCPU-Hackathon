@@ -72,7 +72,8 @@ func main() {
 
 func initFirestore() error {
 	log.Println("Initializing Firestore...")
-	sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	//sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	sa := option.WithCredentialsFile("/secrets/key.json")
 	var err error
 	firestoreClient, err = firestore.NewClient(ctx, projectID, sa)
 	if err != nil {
@@ -85,7 +86,8 @@ func initFirestore() error {
 
 func initStorage() error {
 	log.Println("Initializing Google Cloud Storage...")
-	sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	//sa := option.WithCredentialsFile("./platinum-chain-token-service.json")
+	sa := option.WithCredentialsFile("/secrets/key.json")
 	var err error
 	storageClient, err = storage.NewClient(ctx, sa)
 	if err != nil {
