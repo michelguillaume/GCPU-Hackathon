@@ -131,6 +131,10 @@ The application is deployed on:
 
 ## Contributors
 
+- Geoffrey Delot
+- Maël-mamadou Diagne
+- Jonathan Palta
+- Aloïs Canot
 - Guillaume Michel
 
 
