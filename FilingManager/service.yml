@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: filing-manager-service
+  labels:
+    app: filing-manager
+spec:
+  type: LoadBalancer
+  selector:
+    app: filing-manager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
