@@ -31,7 +31,7 @@
 #
 # 5. Change the values in the "env" block to match your values.
 
-name: 'Build and Deploy KeyFlow API to GKE'
+name: 'Build and Deploy FilingManager API to GKE'
 
 on:
   push:
@@ -104,7 +104,7 @@ jobs:
             --tag "${DOCKER_TAG}" \
             --build-arg GITHUB_SHA="${GITHUB_SHA}" \
             --build-arg GITHUB_REF="${GITHUB_REF}" \
-            KeyFlow/api
+            FilingManager
 
           docker push "${DOCKER_TAG}"
 
