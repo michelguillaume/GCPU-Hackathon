@@ -1,7 +1,7 @@
 
 # GCPU Hackathon - Financial Report Insights
 
-[Live Deployment on Vercel](https://gcpu-hackathon-pg5p7ark5-guillaume-michels-projects-b8350f77.vercel.app)
+[Live Deployment on Vercel](https://gcpu-hackathon.vercel.app/)
 
 > ⚠️ **Note**: The deployment is hosted in the US, which may introduce some lag.
 
