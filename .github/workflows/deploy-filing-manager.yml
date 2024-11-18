@@ -104,7 +104,7 @@ jobs:
             --tag "${DOCKER_TAG}" \
             --build-arg GITHUB_SHA="${GITHUB_SHA}" \
             --build-arg GITHUB_REF="${GITHUB_REF}" \
-            KeyFlow/api
+            FilingManager
 
           docker push "${DOCKER_TAG}"
 
